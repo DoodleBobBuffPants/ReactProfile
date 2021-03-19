@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import cookie from 'react-cookies';
 import { Grid, Message } from "semantic-ui-react";
 import "./index.scss";
+import { USER_COOKIE } from "environment";
 import { AppError, User } from "Types";
-import { Header, Landing, LoggedIn, Profile } from "Components";
+import { Header, Landing, LoggedIn, Profile } from "App";
 
 interface Props {}
 
@@ -17,7 +18,7 @@ interface State {
 class App extends Component<Props, State> {
   constructor(props : Props) {
     super(props);
-    this.state = { error: { message: "" }, user: cookie.load("react-profile-user") ?? { name: "", picture: "" } };
+    this.state = { error: { message: "" }, user: cookie.load(USER_COOKIE) ?? { name: "", picture: "" } };
     this.onError = this.onError.bind(this);
     this.onSuccess = this.onSuccess.bind(this);
     this.onSetUser = this.onSetUser.bind(this);
@@ -33,12 +34,12 @@ class App extends Component<Props, State> {
 
   onSetUser(user : User) {
     this.setState({ ...this.state, user });
-    cookie.save('react-profile-user', user, { path: '/' });
+    cookie.save(USER_COOKIE, user, { path: '/' });
   }
   
   render() {
     return <Router>
-      <Header user={this.state.user}/>
+      <Header/>
       
       <Grid columns={3}>
         <Grid.Row>
@@ -48,11 +49,7 @@ class App extends Component<Props, State> {
             {this.state.error.message != "" && <Message error header={this.state.error.message}/>}
             <Switch>
               <Route exact path="/">
-                <Landing
-                  onError={error => this.onError(error)}
-                  onSuccess={() => this.onSuccess()}
-                  setUser={user => this.onSetUser(user)}
-                />
+                <Landing/>
               </Route>
               
               <Route exact path="/logged-in">
@@ -78,3 +75,5 @@ class App extends Component<Props, State> {
 
 const hotApp = hot(module)(App);
 export { hotApp as App };
+export * from "./Header";
+export * from "./Pages";

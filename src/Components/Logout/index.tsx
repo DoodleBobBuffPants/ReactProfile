@@ -2,12 +2,13 @@
 import cookie from 'react-cookies';
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "semantic-ui-react";
+import { TOKEN_COOKIE, USER_COOKIE } from "environment";
 
 interface Props {}
 
 function onLogout() {
-  cookie.remove('react-profile-bearer-token', { path: '/' });
-  cookie.remove('react-profile-user', { path: '/' });
+  cookie.remove(TOKEN_COOKIE, { path: '/' });
+  cookie.remove(USER_COOKIE, { path: '/' });
 }
 
 const Logout : FC<Props> = () : ReactElement => {
