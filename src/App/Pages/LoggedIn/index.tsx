@@ -2,7 +2,7 @@
 import { useHistory } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loader } from "semantic-ui-react";
-import { LOGIN_REDIRECT, setBearerToken } from "environment";
+import { AFTER_LOGIN_REDIRECT, setBearerToken } from "environment";
 import { User } from "Types";
 
 interface Props {
@@ -20,7 +20,7 @@ const LoggedIn : FC<Props> = (props) : ReactElement => {
       setBearerToken(await getAccessTokenSilently());
       if (isAuthenticated && user) {
         props.setUser({ name: user.name, picture: user.picture });
-        history.push(`/${LOGIN_REDIRECT}`);
+        history.push(`/${AFTER_LOGIN_REDIRECT}`);
       }
     }
 

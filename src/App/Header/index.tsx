@@ -3,12 +3,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Header as SemanticHeader, Menu } from "semantic-ui-react";
 import { setBearerToken } from "environment";
 import "./index.scss";
-import { User } from "Types";
 import { Login, Logout } from "Components";
 
-interface Props {
-  user : User
-}
+interface Props {}
 
 const Header : FC<Props> = (props) : ReactElement => {
   const [authButton, setAuthButton] = useState(<Login/>);
@@ -21,7 +18,7 @@ const Header : FC<Props> = (props) : ReactElement => {
       setAuthButton(<Login/>);
       setBearerToken("");
     }
-  }, [isAuthenticated, props.user]);
+  }, [isAuthenticated]);
   
   return <Menu color="grey" inverted size='large'>
     <Menu.Menu className="centered-menu">
@@ -35,5 +32,3 @@ const Header : FC<Props> = (props) : ReactElement => {
 };
 
 export { Header };
-export * from "./Login";
-export * from "./Logout";
