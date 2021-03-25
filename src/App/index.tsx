@@ -1,76 +1,64 @@
-import React, { Component } from "react";
+import React, { FC, ReactElement, useState } from "react";
 import { hot } from "react-hot-loader";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import cookie from 'react-cookies';
 import { Grid, Message } from "semantic-ui-react";
 import "./index.scss";
 import { USER_COOKIE } from "environment";
-import { AppError, User } from "Types";
+import { User } from "Types";
 import { Header, Landing, LoggedIn, Profile } from "App";
 
 interface Props {}
 
-interface State {
-  error : AppError,
-  user : User
-}
+const App : FC<Props> = () : ReactElement => {
+  const [error, setError] = useState({ message: "" });
+  const [user, setUser] = useState(cookie.load(USER_COOKIE) ?? { name: "", picture: "" });
 
-class App extends Component<Props, State> {
-  constructor(props : Props) {
-    super(props);
-    this.state = { error: { message: "" }, user: cookie.load(USER_COOKIE) ?? { name: "", picture: "" } };
-    this.onError = this.onError.bind(this);
-    this.onSuccess = this.onSuccess.bind(this);
-    this.onSetUser = this.onSetUser.bind(this);
+  function onError(error : Error) {
+    setError({ message: error.message });
   }
 
-  onError(error : Error) {
-    this.setState({ ...this.state, error: { message: error.message } });
+  function onSuccess() {
+    setError({ message: "" });
   }
 
-  onSuccess() {
-    this.setState({ ...this.state, error: { message: "" } });
-  }
-
-  onSetUser(user : User) {
-    this.setState({ ...this.state, user });
+  function onSetUser(user : User) {
+    setUser(user);
     cookie.save(USER_COOKIE, user, { path: '/' });
   }
   
-  render() {
-    return <Router>
-      <Header/>
-      
-      <Grid columns={3}>
-        <Grid.Row>
-          <Grid.Column width={3}/>
-          
-          <Grid.Column width={10}>
-            {this.state.error.message != "" && <Message error header={this.state.error.message}/>}
-            <Switch>
-              <Route exact path="/">
-                <Landing/>
-              </Route>
-              
-              <Route exact path="/logged-in">
-                <LoggedIn
-                  onError={error => this.onError(error)}
-                  onSuccess={() => this.onSuccess()}
-                  setUser={user => this.onSetUser(user)}
-                />
-              </Route>
+  return <Router>
+    <Header/>
+    
+    <Grid columns={3}>
+      <Grid.Row>
+        <Grid.Column width={3}/>
+        
+        <Grid.Column width={10}>
+          {error.message != "" && <Message error header={error.message}/>}
+          <Switch>
+            <Route exact path="/">
+              <Landing/>
+            </Route>
+            
+            <Route exact path="/logged-in">
+              <LoggedIn
+                onError={onError}
+                onSuccess={onSuccess}
+                setUser={onSetUser}
+              />
+            </Route>
 
-              <Route exact path="/profile">
-                <Profile user={this.state.user}/>
-              </Route>
-            </Switch>
-          </Grid.Column>
+            <Route exact path="/profile">
+              <Profile user={user}/>
+            </Route>
+          </Switch>
+        </Grid.Column>
 
-          <Grid.Column width={3}/>
-        </Grid.Row>
-      </Grid>
-    </Router>
-  }
+        <Grid.Column width={3}/>
+      </Grid.Row>
+    </Grid>
+  </Router>
 }
 
 const hotApp = hot(module)(App);
